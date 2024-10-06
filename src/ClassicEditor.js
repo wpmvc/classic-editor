@@ -49,8 +49,11 @@ const ClassicEditor = ( {
 	};
 
 	useEffect( () => {
-		if ( editorRef.current ) {
-			editorRef.current.setContent( value ); // Update editor content if value changes
+		if (
+			editorRef.current &&
+			value !== editorRef.current.getContent()
+		) {
+			editorRef.current.setContent( value ); // Update editor content if value changes from outside
 		}
 	}, [ value ] );
 
