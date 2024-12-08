@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from '@wordpress/element';
+import { useEffect, useRef, useMemo, useState } from '@wordpress/element';
 import EditorWrapper from './EditorWrapper';
 
 const ClassicEditor = ( {
@@ -8,6 +8,7 @@ const ClassicEditor = ( {
 	useExtendStyles = false, // Pass this prop to control extended styles,
 	hasMedia = true,
 } ) => {
+	const [ isEditorReady, setIsEditorReady ] = useState( false );
 	const editorRef = useRef( null );
 
 	const editorId = useMemo(
@@ -28,6 +29,8 @@ const ClassicEditor = ( {
 		editor.on( 'change', () => {
 			onChange( editor.getContent() );
 		} );
+
+		setIsEditorReady( true );
 	};
 
 	const initEditor = () => {
@@ -49,13 +52,18 @@ const ClassicEditor = ( {
 	};
 
 	useEffect( () => {
-		if (
-			editorRef.current &&
-			value !== editorRef.current.getContent()
-		) {
+		if ( editorRef.current && value !== editorRef.current.getContent() ) {
 			editorRef.current.setContent( value ); // Update editor content if value changes from outside
 		}
 	}, [ value ] );
+
+	useEffect( () => {
+		if ( isEditorReady ) {
+			setTimeout( () => {
+				editorRef.current.setContent( value );
+			}, 500 );
+		}
+	}, [ isEditorReady ] );
 
 	useEffect( () => {
 		if ( hasWpEditor ) {
